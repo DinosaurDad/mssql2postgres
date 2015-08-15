@@ -99,7 +99,12 @@ def copy_data_to(db, table, columns, from)
   else
     db.put_copy_end
     while res = db.get_result
-      puts "Result of COPY is: %s" % [ res.res_status(res.result_status) ]
+      status = res.res_status(res.result_status)
+      if status != "PGRES_COMMAND_OK"
+        puts "Postgres COPY command failed: #{status}, #{res.error_message}"
+      else
+        puts "Result of COPY is: %s" % [ res.res_status(res.result_status) ]
+      end
     end
   end
 end
