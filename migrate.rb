@@ -75,7 +75,7 @@ def next_page(db, table_name, field_list, order_column, page, page_size)
 end
 
 def copy_data_to(db, table, columns, from)
-  db.exec("COPY #{table} (#{columns.map { |c| c[:name] }.join(", ")}) FROM STDIN WITH CSV")
+  db.exec("COPY \"#{table}\" (#{columns.map { |c| c[:name] }.join(", ")}) FROM STDIN WITH CSV")
   begin
     from.each(cache_rows: false) do |row|
       row.keys.each do |k|
