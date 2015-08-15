@@ -204,6 +204,15 @@ tables.each do |table|
   create_sql += ")"
 
   pg_conn.exec(create_sql)
+#sort_by here!
+#http://stackoverflow.com/questions/24923728/sorting-an-array-using-another-array
+
+tableSort = YAML.load_file('tables.yml')
+if tableSort.count > 0
+  # remove any tables not in the sort list
+  tables = tables.select {|table| tableSort.include? table[:name]}
+  # sort the remaining tables according to the specified sort list
+  tables = tables.sort_by{|table| (tableSort.index table[:name]) || 10000}
 end
 
 tables.each do |table|
