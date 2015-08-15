@@ -137,12 +137,12 @@ end
 # tables to ignore
 blacklist = YAML.load_file('blacklist.yml')
 
-
 creds = YAML.load_file('db_creds.yml')
 symbolize_keys(creds)
 creds.merge!({timeout: 0})
 
 mssql_conn = TinyTds::Client.new(creds)
+mssql_conn.execute('SET TEXTSIZE 2147483647')
 
 tables = []
 
