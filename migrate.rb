@@ -128,15 +128,6 @@ def get_column_metadata(db, object_id)
   columns
 end
 
-def read_credentials(file_handle)
-  {
-    username: file_handle.readline.strip,
-    password: file_handle.readline.strip,
-    host: file_handle.readline.strip,
-    database: file_handle.readline.strip
-  }
-end
-
 def symbolize_keys(hash)
   hash.keys.each do |key|
     hash[(key.to_sym rescue key) || key] = hash.delete(key)
