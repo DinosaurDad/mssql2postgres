@@ -206,10 +206,13 @@ tables.each do |table|
   pg_conn.exec(create_sql)
 end
 
-#Pull data and push to postgres
 tables.each do |table|
+  puts ""
+  puts "---------------------------------------------------------------------------"
+  puts "Migrating: #{table[:name]}"
+  puts "---------------------------------------------------------------------------"
   field_list = table[:columns].map { |c| "[" + c[:name] + "]" }.join(", ")
-  
+
   page = 1
 
   result = next_page(mssql_conn, table[:name], field_list, table[:columns].first[:name], page, PAGE_SIZE)
