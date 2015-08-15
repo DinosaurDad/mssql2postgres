@@ -69,8 +69,8 @@ end
 
 def next_page(db, table_name, field_list, order_column, page, page_size)
   select_sql = "WITH foo AS (SELECT #{field_list}, ROW_NUMBER() OVER(ORDER BY #{order_column}) as row_num FROM #{table_name}) 
-  SELECT #{field_list} FROM foo WHERE row_num BETWEEN #{(page - 1) * page_size - 1} AND #{page * page_size}" 
-
+  SELECT #{field_list} FROM foo WHERE row_num BETWEEN #{(page - 1) * page_size} AND #{page * page_size - 1}" 
+  #puts "#{(page - 1) * page_size} AND #{page * page_size - 1}"
   db.execute(select_sql)
 end
 
