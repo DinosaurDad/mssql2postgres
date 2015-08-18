@@ -134,6 +134,32 @@ def symbolize_keys(hash)
   end
 end
 
+def update_sequences(db)
+  puts ""
+  puts "---------------------------------------------------------------------------"
+  puts "Updating sequences"
+  puts "---------------------------------------------------------------------------"
+  res = db.exec("SELECT * from ( SELECT table_catalog, table_schema, table_name, column_name, 
+                                   replace(pg_get_serial_sequence('\"' || table_name || '\"', column_name), 'public.','') as seq_name
+                                 FROM information_schema.columns WHERE table_schema = 'public' ) a WHERE a.seq_name is not null ORDER BY a.seq_name;")
+  res.each do |row| 
+    script = "SELECT setval('#{row["seq_name"]}',(SELECT COALESCE(max(#{row["column_name"]}),1) FROM \"#{row["table_name"]}\")) as cnt"
+    execRes = db.exec(script)
+    execRes.each do |newRow|
+      puts "Setting #{row["seq_name"]} to #{newRow["cnt"]}"
+    end
+  end
+end
+
+def vacuum(db)
+  puts ""
+  puts "---------------------------------------------------------------------------"
+  puts "Vacuuming database"
+  puts "---------------------------------------------------------------------------"
+  res = db.exec("VACUUM FULL;")
+  puts ""
+end
+
 # tables to ignore
 blacklist = YAML.load_file('blacklist.yml')
 
@@ -237,6 +263,9 @@ tables.each do |table|
     result = next_page(mssql_conn, table[:name], field_list, table[:columns].first[:name], page, PAGE_SIZE)
   end
 end
+
+update_sequences(pg_conn)
+vacuum(pg_conn)
 
 mssql_conn.close
 pg_conn.close
